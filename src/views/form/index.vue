@@ -1,85 +1,130 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Activity name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker v-model="form.date1" type="date" placeholder="Pick a date" style="width: 100%;" />
-        </el-col>
-        <el-col :span="2" class="line">-</el-col>
-        <el-col :span="11">
-          <el-time-picker v-model="form.date2" type="fixed-time" placeholder="Pick a time" style="width: 100%;" />
-        </el-col>
-      </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery" />
-      </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type" />
-          <el-checkbox label="Promotion activities" name="type" />
-          <el-checkbox label="Offline activities" name="type" />
-          <el-checkbox label="Simple brand exposure" name="type" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor" />
-          <el-radio label="Venue" />
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input v-model="form.desc" type="textarea" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
-    </el-form>
+    <div>
+      <el-button type="success" @click="add('1')" class="btn">添加分类</el-button>
+    </div>
+    <el-table
+      v-loading="listLoading"
+      :data="list"
+      element-loading-text="Loading"
+      row-key="id"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <!-- <el-table-column label="头像"  align="center">
+        <template slot-scope="scope">
+          <img :src="scope.row.file" alt="" style="width:4rem;height:4rem">
+        </template>
+      </el-table-column>-->
+      <el-table-column label="名称" align="center">
+        <template slot-scope="scope">{{ scope.row.name }}</template>
+      </el-table-column>
+      <el-table-column label="权重" align="center">
+        <template slot-scope="scope">{{ scope.row.sort }}</template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button
+            type="success"
+            @click="add(scope.row)"
+            class="btn"
+            v-if="scope.row.children||scope.row.parentId==0"
+          >添加</el-button>
+          <el-button @click="edit('edit',scope.row)">编辑</el-button>
+          <el-button type="danger" @click="del(scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <add v-if="adddia" @close="close" :level="level"></add>
+    <edit v-if="editdia" @close="close" :item="item"></edit>
   </div>
 </template>
 
 <script>
+import { getList, del } from '@/api/table'
+import add from './api/add'
+import edit from './api/edit'
 export default {
+  components: {
+    add,
+    edit
+  },
   data() {
     return {
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      }
+      list: null,
+      listLoading: true,
+      data: '',
+      adddia: false,
+      editdia: false,
+      item: '',
+      page: 1,
+      pageSize: 1,
+      children: '',
+      level: ''
     }
   },
+  created() {
+    this.searchcategory()
+  },
   methods: {
-    onSubmit() {
-      this.$message('submit!')
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
+    searchcategory(id) {
+      this.$http.get('/manage/categoryList').then(res => {
+        this.listLoading = false
+        var a = []
+        var b = []
+        res.data.forEach(e => {
+          if (e.parentId == 0) {
+            e.children = []
+            a.push(e)
+          } else {
+            b.push(e)
+          }
+        })
+        for (let i = 0; i < a.length; i++) {
+          for (let j = 0; j < b.length; j++) {
+            if (a[i].id === b[j].parentId) {
+              a[i].children.push(b[j])
+            }
+          }
+        }
+
+        this.list = a
       })
+    },
+
+    del(id) {
+      this.$http
+        .post('/manage/categorydel', { id: id })
+        .then(res => {
+          this.searchcategory()
+        })
+        .catch(() => {})
+    },
+    // 增加
+    add(a) {
+      this.adddia = true
+      if (typeof a == 'string') {
+        this.level = a
+      } else {
+        this.level = a.id
+      }
+    },
+    // 编辑
+    edit(a, row) {
+      this.editdia = true
+      this.item = row
+    },
+    close(a) {
+      this.adddia = false
+      this.editdia = false
+      if (a) {
+        this.searchcategory()
+      }
     }
   }
 }
 </script>
-
-<style scoped>
-.line{
-  text-align: center;
+<style  scoped>
+.btn {
+  margin-bottom: 10px;
 }
 </style>
-

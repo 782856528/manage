@@ -43,27 +43,26 @@ export const constantRoutes = [
     hidden: true
   },
 
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [{
+  //     path: 'dashboard',
+  //     name: 'Dashboard',
+  //     component: () => import('@/views/dashboard/index'),
+  //     meta: { title: 'Dashboard', icon: 'dashboard' }
+  //   }]
+  // },
+
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
     name: 'Example',
-    meta: { title: '用户管理', icon: 'example' },
+    redirect: '/table',
     children: [
       {
-        path: 'table',
+        path: '/table',
         name: 'Table',
         component: () => import('@/views/table/index'),
         meta: { title: '用户管理', icon: 'table' }
@@ -73,14 +72,28 @@ export const constantRoutes = [
   },
 
   {
-    path: '/form',
+    path: '/classify',
     component: Layout,
+    name: 'Form',
     children: [
       {
-        path: 'index',
+        path: '/index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: '分类管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/content',
+    component: Layout,
+    name: 'content',
+    children: [
+      {
+        path: '',
+        name: 'content',
+        component: () => import('@/views/content/index'),
+        meta: { title: '内容管理', icon: 'form' }
       }
     ]
   },

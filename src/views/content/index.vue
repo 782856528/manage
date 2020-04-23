@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div>
-      <el-button type="success" @click="add" class="btn">添加用户</el-button>
+      <el-button type="success" @click="add" class="btn">添加内容</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -10,24 +10,29 @@
       fit
       highlight-current-row
     >
-     <el-table-column label="头像"  align="center">
+     <el-table-column label="标题"  align="center">
         <template slot-scope="scope">
-          <img :src="scope.row.file" alt="" style="width:4rem;height:4rem">
+         {{ scope.row.title}}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="备注" align="center">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.remark }}
         </template>
       </el-table-column>
-       <el-table-column label="年龄" align="center">
+       <el-table-column label="是否热门" align="center">
         <template slot-scope="scope">
-          {{ scope.row.age }}
+          {{ scope.row.ishot }}
         </template>
       </el-table-column>
-       <el-table-column label="性别"  align="center">
+       <el-table-column label="类型" align="center">
         <template slot-scope="scope">
-          {{ scope.row.sex }}
+          {{ scope.row.type }}
+        </template>
+      </el-table-column>
+       <el-table-column label="创建时间"  align="center">
+        <template slot-scope="scope">
+          {{ scope.row.create_time }}
         </template>
       </el-table-column>
      
@@ -76,21 +81,20 @@ export default {
     }
   },
   created() {
-    this.fetchData()
+    this.searchcategory()
 
   },
   methods: {
   
-    fetchData() {
-      this.listLoading = true
-      getList({page:this.page,pageSize:this.pageSize}).then(response => {
-        this.list = response.data
+    searchcategory() {
+      this.$http.get('/manage/contentList').then(res => {
         this.listLoading = false
+        this.list = res.data
       })
     },
     del(id){
-     this.$http.post("/manage/del", {id:id}).then(res => {
-     this.fetchData()
+     this.$http.post("/manage/contentdel", {id:id}).then(res => {
+     this.searchcategory()
       }).catch(()=>{});
     },
     // 增加
@@ -106,7 +110,7 @@ export default {
         this.adddia=false;
         this.editdia=false;
       if(a){
-         this.fetchData()
+         this.searchcategory()
       }
     }
   }
