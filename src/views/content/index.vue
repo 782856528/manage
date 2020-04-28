@@ -15,7 +15,7 @@
          {{ scope.row.title}}
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center">
+      <el-table-column label="简介" align="center">
         <template slot-scope="scope">
           {{ scope.row.remark }}
         </template>

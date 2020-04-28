@@ -18,12 +18,12 @@
       <el-form-item label="标题" prop="title" >
         <el-input v-model="innerItem.title" style="width:80%"></el-input>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <el-form-item label="简介" prop="remark">
         <el-input v-model="innerItem.remark" style="width:80%"></el-input>
       </el-form-item>
       <el-form-item label="类别" prop="remark">
         <el-cascader
-  v-model="code"
+          v-model="code"
           :options="list"
           style="width:80%"
           :props="{ checkStrictly: true }"
@@ -91,7 +91,7 @@ export default {
         sort: [{ required: true, message: '请输入权重' }],
          title: [{ required: true, message: '请输入标题' }],
         ishot: [{ required: true, message: '请选择是否热门' }],
-        remark: [{ required: true, message: '请输入备注' }],
+        remark: [{ required: true, message: '请输入简介' }],
         content: [{ required: true, message: '请输入内容' }],
         type_id: [{ required: true, message: '请选择类型' }]
       }
